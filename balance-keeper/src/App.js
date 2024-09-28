@@ -1,8 +1,4 @@
-
-
-
 import React, { useState, useEffect } from "react";
-
 
 import backgroundImage from './assets/background1.png'; // Adjust the path to your image
 
@@ -13,11 +9,17 @@ function App() {
   const [mood, setMood] = useState(""); // For button mood selection
   const [notes, setNotes] = useState(""); // For notes field
   const [logs, setLogs] = useState([]);
+  const [substanceButtons, setSubstanceButtons] = useState([]);
 
   useEffect(() => {
     const savedLogs = localStorage.getItem("logs");
     if (savedLogs) {
       setLogs(JSON.parse(savedLogs));
+    }
+
+    const savedSubstances = localStorage.getItem("substanceButtons");
+    if (savedSubstances) {
+      setSubstanceButtons(JSON.parse(savedSubstances));
     }
   }, []);
 
@@ -26,6 +28,14 @@ function App() {
     const updatedLogs = [...logs, newLog];
     setLogs(updatedLogs);
     localStorage.setItem("logs", JSON.stringify(updatedLogs));
+
+    // Add substance to buttons if it doesn't exist
+    if (!substanceButtons.includes(substance)) {
+      const updatedSubstances = [...substanceButtons, substance];
+      setSubstanceButtons(updatedSubstances);
+      localStorage.setItem("substanceButtons", JSON.stringify(updatedSubstances));
+    }
+
     setSubstance("");
     setAmount("");
     setTime("");
@@ -69,16 +79,40 @@ function App() {
 
   return (
     <div style={{ padding: "20px", maxWidth: "600px", margin: "0 auto", fontFamily: "Arial, sans-serif" }}>
-      <h2 style={{ textAlign: "center", color: "#333" }}>Substance Tracker</h2>
+      <h2 style={{ textAlign: "center", color: "#333" }}>Balance Keeper</h2>
+
+      {/* Substance Selection */}
       <div style={{ marginBottom: "20px" }}>
         <label>Substance: </label>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginBottom: "10px" }}>
+          {substanceButtons.map((sub, index) => (
+            <button
+              key={index}
+              onClick={() => setSubstance(sub)}
+              style={{
+                padding: "10px 15px",
+                backgroundColor: substance === sub ? "#007bff" : "#f0f0f0",
+                color: substance === sub ? "#fff" : "#333",
+                border: "none",
+                borderRadius: "8px",
+                cursor: "pointer",
+                transition: "background-color 0.3s",
+              }}
+            >
+              {sub}
+            </button>
+          ))}
+        </div>
         <input
           type="text"
           value={substance}
           onChange={(e) => setSubstance(e.target.value)}
+          placeholder="Enter new substance"
           style={{ padding: "10px", width: "100%", marginBottom: "10px", borderRadius: "5px", border: "1px solid #ccc" }}
         />
       </div>
+
+      {/* Amount, Time, Mood, Notes inputs */}
       <div style={{ marginBottom: "20px" }}>
         <label>Amount: </label>
         <input
@@ -130,11 +164,14 @@ function App() {
           style={{ padding: "10px", width: "100%", height: "80px", borderRadius: "5px", border: "1px solid #ccc" }}
         />
       </div>
+
+      {/* Buttons for adding, clearing, downloading logs */}
       <div style={{ display: "flex", justifyContent: "space-between" }}>
         <button onClick={handleAddLog} style={buttonStyle}>Add Log</button>
         <button onClick={handleClearLogs} style={buttonStyle}>Clear Logs</button>
         <button onClick={downloadCSV} style={buttonStyle}>Download CSV</button>
       </div>
+
       <h3 style={{ marginTop: "30px", color: "#555" }}>Usage Logs</h3>
       <ul>
         {logs.map((log, index) => (
