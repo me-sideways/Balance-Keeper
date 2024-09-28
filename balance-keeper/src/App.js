@@ -52,65 +52,87 @@ function App() {
     document.body.removeChild(link);
   };
 
+  const moodButtons = [
+    { label: '🌅 Starting my day', value: '🌅 Starting my day', color: '#ffcc80' },
+    { label: '😟 Anxious', value: '😟 Anxious', color: '#ffab91' },
+    { label: '🌙 Can\'t sleep', value: '🌙 Can\'t sleep', color: '#80deea' },
+    { label: '😫 Stressed', value: '😫 Stressed', color: '#ff8a80' },
+    { label: '😔 Depressed', value: '😔 Depressed', color: '#b39ddb' },
+    { label: '😊 Everything is good', value: '😊 Everything is good', color: '#a5d6a7' }
+  ];
+
   return (
-    <div style={{ padding: "20px", maxWidth: "500px", margin: "0 auto" }}>
-      <h2>Substance Tracker</h2>
-      <div>
+    <div style={{ padding: "20px", maxWidth: "600px", margin: "0 auto", fontFamily: "Arial, sans-serif" }}>
+      <h2 style={{ textAlign: "center", color: "#333" }}>Substance Tracker</h2>
+      <div style={{ marginBottom: "20px" }}>
         <label>Substance: </label>
         <input
           type="text"
           value={substance}
           onChange={(e) => setSubstance(e.target.value)}
+          style={{ padding: "10px", width: "100%", marginBottom: "10px", borderRadius: "5px", border: "1px solid #ccc" }}
         />
       </div>
-      <div>
+      <div style={{ marginBottom: "20px" }}>
         <label>Amount: </label>
         <input
           type="text"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
+          style={{ padding: "10px", width: "100%", marginBottom: "10px", borderRadius: "5px", border: "1px solid #ccc" }}
         />
       </div>
-      <div>
+      <div style={{ marginBottom: "20px" }}>
         <label>Time: </label>
         <input
           type="text"
           placeholder="HH:MM"
           value={time}
           onChange={(e) => setTime(e.target.value)}
+          style={{ padding: "10px", width: "100%", marginBottom: "10px", borderRadius: "5px", border: "1px solid #ccc" }}
         />
       </div>
-      <div>
+      <div style={{ marginBottom: "20px" }}>
         <label>Mood: </label>
-        <div style={{ marginBottom: "10px" }}>
-          <button onClick={() => setMood("🌅 Starting my day")} style={{ marginRight: "5px" }}>🌅 Starting my day</button>
-          <button onClick={() => setMood("😟 Anxious")} style={{ marginRight: "5px" }}>😟 Anxious</button>
-          <button onClick={() => setMood("🌙 Can't sleep")} style={{ marginRight: "5px" }}>🌙 Can't sleep</button>
-          <button onClick={() => setMood("😫 Stressed")} style={{ marginRight: "5px" }}>😫 Stressed</button>
-          <button onClick={() => setMood("😔 Depressed")} style={{ marginRight: "5px" }}>😔 Depressed</button>
-          <button onClick={() => setMood("😊 Everything is good")} style={{ marginRight: "5px" }}>😊 Everything is good</button>
+        <div style={{ marginTop: "10px", display: "flex", flexWrap: "wrap", gap: "10px" }}>
+          {moodButtons.map(button => (
+            <button
+              key={button.value}
+              onClick={() => setMood(button.value)}
+              style={{
+                padding: "10px 15px",
+                backgroundColor: mood === button.value ? button.color : "#f0f0f0",
+                color: mood === button.value ? "#fff" : "#333",
+                border: "none",
+                borderRadius: "8px",
+                cursor: "pointer",
+                transition: "background-color 0.3s",
+                flexGrow: 1
+              }}
+            >
+              {button.label}
+            </button>
+          ))}
         </div>
-        <p>Selected Mood: <strong>{mood || "None"}</strong></p>
+        <p style={{ marginTop: "10px" }}>Selected Mood: <strong>{mood || "None"}</strong></p>
       </div>
-      <div>
+      <div style={{ marginBottom: "20px" }}>
         <label>Notes: </label>
         <textarea
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
+          style={{ padding: "10px", width: "100%", height: "80px", borderRadius: "5px", border: "1px solid #ccc" }}
         />
       </div>
-      <button onClick={handleAddLog}>Add Log</button>
-      <button onClick={handleClearLogs} style={{ marginLeft: "10px" }}>
-        Clear Logs
-      </button>
-      <button onClick={downloadCSV} style={{ marginLeft: "10px" }}>
-        Download CSV
-      </button>
-
-      <h3>Usage Logs</h3>
+      <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <button onClick={handleAddLog} style={buttonStyle}>Add Log</button>
+        <button onClick={handleClearLogs} style={buttonStyle}>Clear Logs</button>
+        <button onClick={downloadCSV} style={buttonStyle}>Download CSV</button>
+      </div>
+      <h3 style={{ marginTop: "30px", color: "#555" }}>Usage Logs</h3>
       <ul>
         {logs.map((log, index) => (
-          <li key={index}>
+          <li key={index} style={{ marginBottom: "15px", padding: "10px", border: "1px solid #eee", borderRadius: "5px" }}>
             <strong>{log.substance}</strong> - {log.amount} at {log.time}
             <br /> Mood: {log.mood}
             <br /> Notes: {log.notes}
@@ -120,5 +142,16 @@ function App() {
     </div>
   );
 }
+
+const buttonStyle = {
+  padding: "10px 15px",
+  backgroundColor: "#007bff",
+  color: "#fff",
+  border: "none",
+  borderRadius: "5px",
+  cursor: "pointer",
+  transition: "background-color 0.3s",
+  width: "30%"
+};
 
 export default App;
