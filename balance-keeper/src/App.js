@@ -1,4 +1,10 @@
+
+
+
 import React, { useState, useEffect } from "react";
+
+
+import backgroundImage from './assets/background1.png'; // Adjust the path to your image
 
 function App() {
   const [substance, setSubstance] = useState("");

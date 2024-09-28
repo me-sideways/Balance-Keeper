@@ -11,3 +11,11 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.app-background {
+  background-image: url('./assets/background1.png'); /* Adjust the path as needed */
+  background-size: cover;
+  background-repeat: repeat;
+  height: 100vh;
+  padding: 20px;
+}
