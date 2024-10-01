@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from "react";
-
+import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 import backgroundImage from './assets/background1.png'; // Adjust the path to your image
+
+//import * as serviceWorker from './serviceWorker';
+//serviceWorker.register();
+
 
 function App() {
   const [substance, setSubstance] = useState("");
@@ -48,26 +52,33 @@ function App() {
     localStorage.removeItem("logs");
   };
 
-  const downloadCSV = () => {
+
+
+  const downloadCSV = async () => {
     const headers = ['Substance', 'Amount', 'Time', 'Mood', 'Notes'];
     const csvRows = [headers];
-
+  
     logs.forEach(log => {
       csvRows.push([log.substance, log.amount, log.time, log.mood, log.notes]);
     });
-
+  
     const csvContent = csvRows.map(row => row.join(',')).join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.href = url;
-    link.setAttribute('download', 'logs.csv');
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  
+    try {
+      // Save the CSV content to the device
+      const result = await Filesystem.writeFile({
+        path: 'logs.csv',            // The file name
+        data: csvContent,            // The CSV content
+        directory: Directory.Documents,  // Save in the Documents folder
+        encoding: Encoding.UTF8       // Ensure it's saved as a UTF-8 encoded file
+      });
+  
+      alert('CSV file saved to Documents folder');
+    } catch (e) {
+      console.error('Unable to save CSV file', e);
+    }
   };
-
+  
   const moodButtons = [
     { label: '🌅 Starting my day', value: '🌅 Starting my day', color: '#ffcc80' },
     { label: '😟 Anxious', value: '😟 Anxious', color: '#ffab91' },
