@@ -1,2 +1,6 @@
-Balance Keeper - Substance Tracking App
-Balance Keeper is a simple React app designed to help users track their substance usage, including the amount, time, mood, and additional notes. The app allows users to log their data, clear logs, and download the usage logs in CSV format. It also features a convenient system for quickly selecting previously used substances and moods.
+Balance Keeper App Release Notes - v1.1
+Release Date: October 11, 2024
+
+This update introduces substance logging, marking the first step towards creating a more comprehensive substance use tracker. Future updates will expand on this by incorporating half-life tracking and visualizing how substances are metabolized over time.
+
+Planned features include tracking substance half-lives, onset of action, and warnings for increasing usage patterns. These enhancements aim to help users gain better insight and control over their substance use.
