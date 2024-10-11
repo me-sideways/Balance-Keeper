@@ -1,17 +1,23 @@
+// App.js
+// Main application component for the Balance Keeper app.
+// Manages state for substance logging (substance, amount, time, mood, notes).
+// Handles user inputs, log saving to localStorage, CSV download, and log display.
+// NOTE: When pasting this file's contents into the chatbot, this is the main control component. 
+// It coordinates other components like SubstanceInput, MoodSelector, and log management.
+
+
+
 import React, { useState, useEffect } from "react";
-import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
-import backgroundImage from './assets/background1.png'; // Adjust the path to your image
-
-//import * as serviceWorker from './serviceWorker';
-//serviceWorker.register();
-
+import SubstanceInput from "./SubstanceInput";
+import MoodSelector from "./MoodSelector";
+import { downloadCSV } from './utils';
 
 function App() {
   const [substance, setSubstance] = useState("");
   const [amount, setAmount] = useState("");
   const [time, setTime] = useState("");
-  const [mood, setMood] = useState(""); // For button mood selection
-  const [notes, setNotes] = useState(""); // For notes field
+  const [mood, setMood] = useState("");
+  const [notes, setNotes] = useState("");
   const [logs, setLogs] = useState([]);
   const [substanceButtons, setSubstanceButtons] = useState([]);
 
@@ -33,7 +39,6 @@ function App() {
     setLogs(updatedLogs);
     localStorage.setItem("logs", JSON.stringify(updatedLogs));
 
-    // Add substance to buttons if it doesn't exist
     if (!substanceButtons.includes(substance)) {
       const updatedSubstances = [...substanceButtons, substance];
       setSubstanceButtons(updatedSubstances);
@@ -43,8 +48,8 @@ function App() {
     setSubstance("");
     setAmount("");
     setTime("");
-    setMood(""); // Clear mood after submission
-    setNotes(""); // Clear notes after submission
+    setMood("");
+    setNotes("");
   };
 
   const handleClearLogs = () => {
@@ -52,141 +57,39 @@ function App() {
     localStorage.removeItem("logs");
   };
 
-
-
-  const downloadCSV = async () => {
-    const headers = ['Substance', 'Amount', 'Time', 'Mood', 'Notes'];
-    const csvRows = [headers];
-  
-    logs.forEach(log => {
-      csvRows.push([log.substance, log.amount, log.time, log.mood, log.notes]);
-    });
-  
-    const csvContent = csvRows.map(row => row.join(',')).join('\n');
-  
-    try {
-      // Save the CSV content to the device
-      const result = await Filesystem.writeFile({
-        path: 'logs.csv',            // The file name
-        data: csvContent,            // The CSV content
-        directory: Directory.Documents,  // Save in the Documents folder
-        encoding: Encoding.UTF8       // Ensure it's saved as a UTF-8 encoded file
-      });
-  
-      alert('CSV file saved to Documents folder');
-    } catch (e) {
-      console.error('Unable to save CSV file', e);
-    }
-  };
-  
-  const moodButtons = [
-    { label: '🌅 Starting my day', value: '🌅 Starting my day', color: '#ffcc80' },
-    { label: '😟 Anxious', value: '😟 Anxious', color: '#ffab91' },
-    { label: '🌙 Can\'t sleep', value: '🌙 Can\'t sleep', color: '#80deea' },
-    { label: '😫 Stressed', value: '😫 Stressed', color: '#ff8a80' },
-    { label: '😔 Depressed', value: '😔 Depressed', color: '#b39ddb' },
-    { label: '😊 Everything is good', value: '😊 Everything is good', color: '#a5d6a7' }
-  ];
-
   return (
     <div style={{ padding: "20px", maxWidth: "600px", margin: "0 auto", fontFamily: "Arial, sans-serif" }}>
       <h2 style={{ textAlign: "center", color: "#333" }}>Balance Keeper</h2>
-
-      {/* Substance Selection */}
-      <div style={{ marginBottom: "20px" }}>
-        <label>Substance: </label>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginBottom: "10px" }}>
-          {substanceButtons.map((sub, index) => (
-            <button
-              key={index}
-              onClick={() => setSubstance(sub)}
-              style={{
-                padding: "10px 15px",
-                backgroundColor: substance === sub ? "#007bff" : "#f0f0f0",
-                color: substance === sub ? "#fff" : "#333",
-                border: "none",
-                borderRadius: "8px",
-                cursor: "pointer",
-                transition: "background-color 0.3s",
-              }}
-            >
-              {sub}
-            </button>
-          ))}
-        </div>
-        <input
-          type="text"
-          value={substance}
-          onChange={(e) => setSubstance(e.target.value)}
-          placeholder="Enter new substance"
-          style={{ padding: "10px", width: "100%", marginBottom: "10px", borderRadius: "5px", border: "1px solid #ccc" }}
-        />
-      </div>
-
-      {/* Amount, Time, Mood, Notes inputs */}
+      
+      <SubstanceInput substance={substance} setSubstance={setSubstance} substanceButtons={substanceButtons} />
+      
+      {/* Amount, Time, Mood, Notes Inputs */}
       <div style={{ marginBottom: "20px" }}>
         <label>Amount: </label>
-        <input
-          type="text"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-          style={{ padding: "10px", width: "100%", marginBottom: "10px", borderRadius: "5px", border: "1px solid #ccc" }}
-        />
+        <input type="text" value={amount} onChange={(e) => setAmount(e.target.value)} style={inputStyle} />
       </div>
       <div style={{ marginBottom: "20px" }}>
         <label>Time: </label>
-        <input
-          type="text"
-          placeholder="HH:MM"
-          value={time}
-          onChange={(e) => setTime(e.target.value)}
-          style={{ padding: "10px", width: "100%", marginBottom: "10px", borderRadius: "5px", border: "1px solid #ccc" }}
-        />
+        <input type="text" placeholder="HH:MM" value={time} onChange={(e) => setTime(e.target.value)} style={inputStyle} />
       </div>
-      <div style={{ marginBottom: "20px" }}>
-        <label>Mood: </label>
-        <div style={{ marginTop: "10px", display: "flex", flexWrap: "wrap", gap: "10px" }}>
-          {moodButtons.map(button => (
-            <button
-              key={button.value}
-              onClick={() => setMood(button.value)}
-              style={{
-                padding: "10px 15px",
-                backgroundColor: mood === button.value ? button.color : "#f0f0f0",
-                color: mood === button.value ? "#fff" : "#333",
-                border: "none",
-                borderRadius: "8px",
-                cursor: "pointer",
-                transition: "background-color 0.3s",
-                flexGrow: 1
-              }}
-            >
-              {button.label}
-            </button>
-          ))}
-        </div>
-        <p style={{ marginTop: "10px" }}>Selected Mood: <strong>{mood || "None"}</strong></p>
-      </div>
+      
+      <MoodSelector mood={mood} setMood={setMood} moodButtons={moodButtons} />
+      
       <div style={{ marginBottom: "20px" }}>
         <label>Notes: </label>
-        <textarea
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
-          style={{ padding: "10px", width: "100%", height: "80px", borderRadius: "5px", border: "1px solid #ccc" }}
-        />
+        <textarea value={notes} onChange={(e) => setNotes(e.target.value)} style={inputStyle} />
       </div>
 
-      {/* Buttons for adding, clearing, downloading logs */}
       <div style={{ display: "flex", justifyContent: "space-between" }}>
         <button onClick={handleAddLog} style={buttonStyle}>Add Log</button>
         <button onClick={handleClearLogs} style={buttonStyle}>Clear Logs</button>
-        <button onClick={downloadCSV} style={buttonStyle}>Download CSV</button>
+        <button onClick={() => downloadCSV(logs)} style={buttonStyle}>Download CSV</button>
       </div>
-
+      
       <h3 style={{ marginTop: "30px", color: "#555" }}>Usage Logs</h3>
       <ul>
         {logs.map((log, index) => (
-          <li key={index} style={{ marginBottom: "15px", padding: "10px", border: "1px solid #eee", borderRadius: "5px" }}>
+          <li key={index} style={logStyle}>
             <strong>{log.substance}</strong> - {log.amount} at {log.time}
             <br /> Mood: {log.mood}
             <br /> Notes: {log.notes}
@@ -197,15 +100,16 @@ function App() {
   );
 }
 
+const inputStyle = {
+  padding: "10px", width: "100%", marginBottom: "10px", borderRadius: "5px", border: "1px solid #ccc"
+};
+
 const buttonStyle = {
-  padding: "10px 15px",
-  backgroundColor: "#007bff",
-  color: "#fff",
-  border: "none",
-  borderRadius: "5px",
-  cursor: "pointer",
-  transition: "background-color 0.3s",
-  width: "30%"
+  padding: "10px 15px", backgroundColor: "#007bff", color: "#fff", border: "none", borderRadius: "5px", cursor: "pointer", width: "30%"
+};
+
+const logStyle = {
+  marginBottom: "15px", padding: "10px", border: "1px solid #eee", borderRadius: "5px"
 };
 
 export default App;
