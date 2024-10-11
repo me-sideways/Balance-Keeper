@@ -1,5 +1,9 @@
 ### **Quick Summary**
 
+
+0. cd balance-keeper
+
+
 1. **Build**: 
    ```bash
    npm run build
@@ -20,7 +24,7 @@
 
 6. **Test**: Install or run the APK on a device/emulator.
 
-
+  
 
 # **Capacitor Android App Update Guide**
 
